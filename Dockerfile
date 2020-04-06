@@ -1,7 +1,8 @@
 FROM ubuntu:18.04
 MAINTAINER vitaliy ilinov <ilinov123@gmail.com>
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    PHP_VERSION=php7.2
 
 COPY ./configs/entrypoint.sh /sbin/entrypoint.sh
 
@@ -9,17 +10,17 @@ RUN apt-get update && apt-get install -y \
     nano \
     composer \
     apache2\
-    php7.2 \
-    php7.2-fpm \
-    libapache2-mod-php7.2 \
-    php7.2-cli \
-    php7.2-curl \
-    php7.2-mysql \
-    php7.2-gd \
-    php7.2-xml \
-    php7.2-mbstring \
-    php7.2-iconv \
-    php7.2-xdebug
+    ${PHP_VERSION} \
+    ${PHP_VERSION}-fpm \
+    libapache2-mod-${PHP_VERSION} \
+    ${PHP_VERSION}-cli \
+    ${PHP_VERSION}-curl \
+    ${PHP_VERSION}-mysql \
+    ${PHP_VERSION}-gd \
+    ${PHP_VERSION}-xml \
+    ${PHP_VERSION}-mbstring \
+    ${PHP_VERSION}-iconv \
+    ${PHP_VERSION}-xdebug
 
 
 RUN a2enmod rewrite \
