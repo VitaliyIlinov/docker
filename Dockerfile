@@ -1,44 +1,53 @@
 FROM ubuntu:18.04
 MAINTAINER vitaliy ilinov <ilinov123@gmail.com>
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    PHP_VERSION=php7.2
+ENV DEBIAN_FRONTEND=noninteractive
 
-COPY ./configs/entrypoint.sh /sbin/entrypoint.sh
+ARG PHP_VERSION=7.2
 
-RUN apt-get update && apt-get install -y \
+#install base packages
+RUN apt-get update && apt-get install -y curl\
     nano \
-    composer \
+    wget \
+    make \
+    autoconf \
+    software-properties-common
+
+# add php repo
+RUN LC_ALL=C.UTF-8 apt-add-repository -y ppa:ondrej/php && apt-get update -y
+
+# add php && apache2
+RUN apt-get update && apt-get install -y \
     apache2\
-    ${PHP_VERSION} \
-    ${PHP_VERSION}-fpm \
-    libapache2-mod-${PHP_VERSION} \
-    ${PHP_VERSION}-cli \
-    ${PHP_VERSION}-curl \
-    ${PHP_VERSION}-mysql \
-    ${PHP_VERSION}-gd \
-    ${PHP_VERSION}-xml \
-    ${PHP_VERSION}-mbstring \
-    ${PHP_VERSION}-iconv \
-    ${PHP_VERSION}-xdebug
+    libapache2-mod-php${PHP_VERSION} \
+    #nginx \
+    #php${PHP_VERSION}-fpm \
+    php${PHP_VERSION} \
+    php${PHP_VERSION}-cli \
+    php${PHP_VERSION}-curl \
+    php${PHP_VERSION}-mysql \
+    php${PHP_VERSION}-gd \
+    php${PHP_VERSION}-xml \
+    php${PHP_VERSION}-mbstring \
+    php${PHP_VERSION}-iconv \
+    php${PHP_VERSION}-xdebug
 
 
 RUN a2enmod rewrite \
-    # 1000 - is USER id
-    # && creating file in volume will be from current user
+    # console command: id
+    # 1000 - is USER;
+    # && creating file in MOUNT volume will be from current user
     && usermod -u 1000 www-data \
-    && groupmod -g 1000 www-data \
-    && chmod 755 /sbin/entrypoint.sh
+    && groupmod -g 1000 www-data
 
-#/etc/init.d/apache2 restart
-# service apache2 status
+COPY docker/ /docker/
+COPY docker/php.ini  /etc/php/${PHP_VERSION}/apache2/conf.d/custom.ini
+COPY docker/xdebug.ini /etc/php/${PHP_VERSION}/mods-available/xdebug.ini
 
-
-COPY ./configs/app.conf /etc/apache2/sites-enabled/000-default.conf
-COPY ./configs/php.ini  /etc/php/7.2/apache2/conf.d/custom.ini
-COPY ./configs/xdebug.ini /etc/php/7.2/mods-available/xdebug.ini
+#additional
+RUN bash /docker/after-build.sh
 
 WORKDIR /var/www/app/
 
-# By default, simply start apache and export apache env.
-CMD ["/sbin/entrypoint.sh"]
+# By default, simply start.
+CMD /docker/entrypoint.d/entrypoint.sh

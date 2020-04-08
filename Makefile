@@ -1,13 +1,28 @@
-IMAGE_NAME = ownubuntu
+IMAGE_NAME = apache_php
 
 # Run make help by default # Run make help by default or first command
 .DEFAULT_GOAL = help
 
+E ?= ternarniy operator
+
 all: build up bash
 
+test:$(foo)
+	#echo $(E)
+ifneq ($(foo),)
+	@echo "with foo"
+else
+	@echo "without foo"
+endif
+
+build: PHP_VERSION:=7.2
 build:
-	@echo "delete image && build..."
-	 docker build -t $(IMAGE_NAME) .
+	@echo "build..."
+	 docker build \
+ 	--build-arg PHP_VERSION=$(PHP_VERSION) \
+ 	--force-rm  \
+ 	-t $(IMAGE_NAME) .
+# 	--no-cache \
 
 del:
 	@echo "delete all containers..."
