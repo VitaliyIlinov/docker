@@ -8,9 +8,13 @@ E ?= ternarniy operator
 
 all: build up bash
 
-test:$(foo)
+test: foo:=7.2
+test: foo1:=nginx
+test:$(foo) $(foo1)
 	#echo $(E)
 	#echo $(ARGS)
+	#echo $(foo)
+	#echo $(foo1)
 ifneq ($(foo),)
 	@echo "with foo"
 else

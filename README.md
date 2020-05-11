@@ -13,8 +13,14 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu
 
 ### Build application image:
 
+You can build app with different php version and web servers/
+Default: 7.2 php version && nginx
 ```bash
 make build
+```
+For custom config:
+```bash
+make build  PHP_VERSION=7.2 WEB_SERVER=apache
 ```
 
 ### Start application
@@ -30,10 +36,8 @@ Now it is ready to use (check http://localhost/ ).
 ```bash
 make help
 ```
-### Config folder include
+
+### Docker folder include
 ```bash
-VirtualHost for apache2
-xdebug
-php
-entrypoint before container run
+Setting for apache && nginx
 ```
