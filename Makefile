@@ -1,5 +1,6 @@
-IMAGE_NAME = apache_php
-
+IMAGE_NAME = own
+BUILD_ID ?= $(shell /bin/date "+%Y%m%d-%H%M%S")
+ARGS = $(filter-out $@,$(MAKECMDGOALS))
 # Run make help by default # Run make help by default or first command
 .DEFAULT_GOAL = help
 
@@ -9,6 +10,7 @@ all: build up bash
 
 test:$(foo)
 	#echo $(E)
+	#echo $(ARGS)
 ifneq ($(foo),)
 	@echo "with foo"
 else
@@ -16,13 +18,15 @@ else
 endif
 
 build: PHP_VERSION:=7.2
+build: WEB_SERVER:=nginx
 build:
 	@echo "build..."
 	 docker build \
  	--build-arg PHP_VERSION=$(PHP_VERSION) \
+ 	--build-arg WEB_SERVER=$(WEB_SERVER) \
  	--force-rm  \
+ 	--no-cache \
  	-t $(IMAGE_NAME) .
-# 	--no-cache \
 
 del:
 	@echo "delete all containers..."
@@ -33,7 +37,8 @@ up:
 	@echo "up..."
 	@docker run -tid \
 	--name $(IMAGE_NAME) \
-	-v ${PWD}/app:/var/www/app/ \
+	-v ${PWD}/app:/var/www/html/ \
+	-e "SOME_ENV=example" \
 	-p 80:80 \
 	$(IMAGE_NAME)
 
