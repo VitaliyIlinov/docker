@@ -14,7 +14,7 @@ rm -rf \
 find /var/log -type f | while read f; do
     echo -ne '' > ${f} 2&>1 > /dev/null || true;
 done
-chmod +x /docker/entrypoint.sh || true
+
 # The for loop throws an error in case of absence file.
 # Thus we'll use if-condition here.
 # Note: We don't use recursive search .
@@ -24,5 +24,7 @@ if [ -z "$(find /docker/${WEB_SERVER}/after_build -maxdepth 1 -type f -name \"*.
     ${file}
   done
 fi
+
+chmod +x /docker/entrypoint.sh || true
 
 exit 0
